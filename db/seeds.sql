@@ -17,14 +17,15 @@ VALUES
     ("CEO", 300000, 5);
 
 INSERT INTO employee(first_name, last_name, role_id, manager_id)
-VALUES 
-    ('Michael', 'Scott', 6, 10),
-    ('Jim', 'Halpert', 1, 1),
-    ('Dwight', 'Schrute', 1, 1),
-    ('Pamela', 'Beesly', 2, 2),
+VALUES
+    ('David', 'Wallace', 7, NULL),
+    ('Michael', 'Scott', 6, 1),
+    ('Jim', 'Halpert', 1, 2),
+    ('Dwight', 'Schrute', 1, 2),
+    ('Pamela', 'Beesly', 2, 3),
     ('Kevin', 'Malone', 3, 1),
-    ('Andrew', 'Bernard', 1, 1),
-    ('Toby', 'Flenderson', 5, 10),
+    ('Andrew', 'Bernard', 1, 2),
+    ('Toby', 'Flenderson', 5, 1),
     ('Angela', 'Martin', 3, 1),
-    ('Stanley', 'Hudson', 4, 10),
-    ('David', 'Wallace', 7, NULL);
+    ('Stanley', 'Hudson', 4, 1);
+
