@@ -1,7 +1,9 @@
+//requiring in inquirer, the database, and console table
 const inquirer = require('inquirer');
 const db = require('./connect/connection')
 require('console.table');
 
+//main menu function
 const startEmployeeTracker = () => {
     inquirer.prompt ([
         {
@@ -19,6 +21,7 @@ const startEmployeeTracker = () => {
            ],
         }
     ])
+    //will replace this with switch statement later. this works for now.
     .then((input) => {
         if (input.option === "View All Departments"){
            viewAllDepartments();
@@ -39,6 +42,7 @@ const startEmployeeTracker = () => {
 
 };
 
+//selecting the department table
 const viewAllDepartments = () => {
     db.query('SELECT * FROM department', function (err, results) {
         if (err) throw err;
@@ -47,6 +51,7 @@ const viewAllDepartments = () => {
       });
 };
 
+//selects everything from role as well as department name from department table
 const viewAllRoles = () => {
     db.query('SELECT * FROM role JOIN department ON role.department_id = department.id', function (err, results) {
         if (err) throw err;
@@ -55,6 +60,7 @@ const viewAllRoles = () => {
       });
 };
 
+//selects employee ids, first names, last names, job titles, departments, salaries, and manager of employees
 const viewAllEmployees = () => {
     db.query('SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, manager.first_name AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN employee manager ON manager.id = employee.manager_id', function (err, results) {
         if (err) throw err;
@@ -63,6 +69,7 @@ const viewAllEmployees = () => {
       });
 };
 
+//adds new department by grabbing user input and inserting it into prepared statement
 const addDepartment = () => {
   inquirer.prompt([
     {
@@ -73,8 +80,8 @@ const addDepartment = () => {
   ])
   .then((input) => {
     console.log(input);
-    const param = [input.department_name]
-    db.query('INSERT INTO department(name) VALUES (?)', param, function (err, results) {
+    const departmentName = [input.department_name]
+    db.query('INSERT INTO department(name) VALUES (?)', departmentName, function (err, results) {
       if (err) throw err;
       console.table(results);
       startEmployeeTracker();
@@ -82,9 +89,12 @@ const addDepartment = () => {
   });
 };
 
+//add role
 const addRole = () => {
+  //query to grab department list from database
   db.query('SELECT * FROM department', function (err, results) {
     console.log(results)
+    //variable to create department object
   const departmentOptions = results.map(department => { return {name: department.name, value: department.id}})
   inquirer.prompt([
     {
@@ -102,10 +112,11 @@ const addRole = () => {
       name: "role_department",
       message: "What department does your role belong in?",
       choices: departmentOptions
-
+      //uses department list as options
     }
   ])
   .then((input) => {
+    //query to insert the user input into prepared statement
      db.query('INSERT INTO role(title, salary, department_id) VALUES (?, ?, ?)', [input.role_name, input.role_salary, input.role_department], (err, data) => {
       if (err) throw err;
        startEmployeeTracker();
@@ -114,9 +125,12 @@ const addRole = () => {
   });
 };
 
+//add employee
 const addEmployee = () => {
+  //first query to grab information from role and make it into a variable
   db.query('SELECT * FROM role', function (err, results) {
   const roleOptions = results.map(role => { return {name: role.title, value: role.id}})
+  //second query to grab information from employee
     db.query('SELECT * FROM employee', function (err, results) {
       const employeeOptions = results.map(employee => { return {name: employee.first_name + ' ' + employee.last_name, value: employee.id}})
       inquirer.prompt([
@@ -144,6 +158,7 @@ const addEmployee = () => {
         },
       ])
       .then((input) => {
+        //third query to create a new employee
         db.query('INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [input.first_name, input.last_name, input.role, input.manager], (err, data) => {
          if (err) throw err;
           startEmployeeTracker();
@@ -153,6 +168,7 @@ const addEmployee = () => {
   });
 };
 
+//update employee role; pretty much the same process as the last one except we are updating the information
 const updateEmployeeRole = () => {
   db.query('SELECT * FROM employee', function (err, results) {
   const employeeOptions = results.map(employee => { return {name: employee.first_name + ' ' + employee.last_name, value: employee.id}})
@@ -173,6 +189,7 @@ const updateEmployeeRole = () => {
         }
       ])
       .then((input) => {
+        //update query
         db.query('UPDATE employee SET role_id = ? WHERE id = ?', [input.role, input.employee_name], (err, data) => {
          if (err) throw err;
           startEmployeeTracker();

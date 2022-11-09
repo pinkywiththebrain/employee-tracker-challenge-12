@@ -29,3 +29,4 @@ VALUES
     ('Angela', 'Martin', 3, 1),
     ('Stanley', 'Hudson', 4, 1);
 
+-- Note: employees must be ordered by managers first because you can't reference an employee who hasn't been created yet (manager_id)
