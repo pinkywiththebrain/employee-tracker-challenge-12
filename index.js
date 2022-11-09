@@ -53,7 +53,7 @@ const viewAllDepartments = () => {
 
 //selects everything from role as well as department name from department table
 const viewAllRoles = () => {
-    db.query('SELECT * FROM role JOIN department ON role.department_id = department.id', function (err, results) {
+    db.query('SELECT role.id, role.title, role.salary, department.name FROM role LEFT JOIN department ON role.department_id = department.id', function (err, results) {
         if (err) throw err;
         console.table(results);
         startEmployeeTracker();
@@ -79,8 +79,7 @@ const addDepartment = () => {
     }
   ])
   .then((input) => {
-    console.log(input);
-    const departmentName = [input.department_name]
+    const departmentName = input.department_name
     db.query('INSERT INTO department(name) VALUES (?)', departmentName, function (err, results) {
       if (err) throw err;
       console.table(results);
@@ -93,7 +92,6 @@ const addDepartment = () => {
 const addRole = () => {
   //query to grab department list from database
   db.query('SELECT * FROM department', function (err, results) {
-    console.log(results)
     //variable to create department object
   const departmentOptions = results.map(department => { return {name: department.name, value: department.id}})
   inquirer.prompt([
